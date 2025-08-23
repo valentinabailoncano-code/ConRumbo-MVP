@@ -1,0 +1,6 @@
+# Requisitos opcionales para ENTRADA de voz (dictado)
+streamlit-webrtc>=0.47.7
+av>=12.3.0
+aiortc>=1.9.0
+soundfile>=0.12.1
+vosk>=0.3.45

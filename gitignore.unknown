@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+
+# Streamlit
+.streamlit/
+downloads/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Models / media pesados
+models/
+assets/*/videos/*.mp4
