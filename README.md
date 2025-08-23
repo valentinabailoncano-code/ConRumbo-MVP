@@ -161,5 +161,3 @@ SMTP_PASS=
 
 ---
 
-
-MIT (sugerida). Añade tu archivo `LICENSE` en la raíz del repo.
