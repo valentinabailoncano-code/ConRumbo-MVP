@@ -1,15 +1,14 @@
 # app.py
 import streamlit as st
+from pathlib import Path
 from streamlit.components.v1 import html
 from io import BytesIO
 import pandas as pd
 from datetime import datetime
 import zipfile, os, re
-
-st.set_page_config(page_title="ConRumbo – Primeros Auxilios (MVP)", page_icon="🆘", layout="wide")
-import streamlit as st
-from pathlib import Path
 import platform
+st.set_page_config(page_title="ConRumbo – Primeros Auxilios (MVP)", page_icon="🆘", layout="wide")
+
 
 # ======== Estilo formal + botón SOS grande ========
 st.markdown("""
@@ -97,8 +96,8 @@ def to_bytes(content: str) -> bytes:
     bio.seek(0)
     return bio.read()
 
-def download_button(label: str, content: str, filename: str):
-    st.download_button(label, data=to_bytes(content), file_name=filename, mime="text/markdown")
+def download_md_button(label: str, content: str, filename: str):
+    st.download_button(label, data=content.encode("utf-8"), file_name=filename, mime="text/markdown")
 
 # =========================
 # Contenidos guía (checklists)
@@ -310,31 +309,50 @@ def media_block(title_key: str):
     imgs = data.get("images", [])
     vids = data.get("videos", [])
 
-    # Galería de imágenes
+    # Imágenes
     if imgs:
         cols = st.columns(min(3, len(imgs)))
         for i, item in enumerate(imgs):
             with cols[i % len(cols)]:
-                src = item.get("url") or item.get("path")
-                if src:
-                    st.image(src, caption=item.get("title", ""), use_container_width=True)
+                src_url = item.get("url")
+                src_path = item.get("path")
+                title = item.get("title", "")
+                if src_url:
+                    st.image(src_url, caption=title, use_container_width=True)
+                elif src_path and os.path.exists(src_path):
+                    st.image(src_path, caption=title, use_container_width=True)
                 else:
-                    st.info(f"Placeholder: {item.get('title','Imagen')} (pendiente)")
+                    st.info(f"📄 Placeholder — {title} (pendiente)")
     else:
         st.info("Aún no hay imágenes. Añádelas en MEDIA['...']['images'].")
 
-    # Vídeos (YouTube/Vimeo URL o archivo local)
+    # Vídeos
     if vids:
         for v in vids:
-            st.markdown(f"**{v.get('title','Vídeo')}**")
-            if v.get("url"):
-                st.video(v["url"])
-            elif v.get("path"):
-                st.video(v["path"])
+            t = v.get("title", "Vídeo")
+            url = v.get("url")
+            path = v.get("path")
+            st.markdown(f"**{t}**")
+            if url:
+                st.video(url)
+            elif path and os.path.exists(path):
+                st.video(path)
             else:
-                st.info("Placeholder de vídeo (pendiente)")
+                st.info("🎬 Placeholder de vídeo (pendiente)")
     else:
         st.info("Aún no hay vídeos. Añádelos en MEDIA['...']['videos'].")
+
+    with st.expander("➕ Añadir material rápido para la demo (no persistente)"):
+        up_imgs = st.file_uploader("Sube imágenes", type=["png","jpg","jpeg"], accept_multiple_files=True, key=f"upimg_{title_key}")
+        up_vids = st.file_uploader("Sube vídeos", type=["mp4","mov","webm"], accept_multiple_files=True, key=f"upvid_{title_key}")
+        if up_imgs:
+            st.success(f"Imágenes cargadas: {len(up_imgs)}")
+            for f in up_imgs:
+                st.image(f, caption=f.name, use_container_width=True)
+        if up_vids:
+            st.success(f"Vídeos cargados: {len(up_vids)}")
+            for f in up_vids:
+                st.video(f)
 
     # Subida rápida para demo (no persiste)
     with st.expander("➕ Añadir material rápido para la demo (no persistente)"):
@@ -386,6 +404,21 @@ tabs = st.tabs([
     "🤖 Chat (voz y texto)",
     "🗂️ Centro de medios"
 ])
+
+with st.sidebar:
+    st.markdown("### 📥 Descargas técnicas")
+    try:
+        import inspect
+        current_script = inspect.getsourcefile(lambda: None) or __file__
+        if os.path.exists(current_script):
+            with open(current_script, "rb") as f:
+                st.download_button("Descargar app.py", f.read(), file_name="app.py", mime="text/x-python", use_container_width=True)
+    except Exception as e:
+        st.caption(f"No se pudo preparar la descarga del script: {e}")
+
+    if os.path.exists("requirements.txt"):
+        with open("requirements.txt", "rb") as f:
+            st.download_button("Descargar requirements.txt", f.read(), file_name="requirements.txt", mime="text/plain", use_container_width=True)
 
 # =========================
 # 1) EMERGENCIAS INMEDIATAS
@@ -597,6 +630,36 @@ with tabs[6]:
     else:
         st.success("¡Todo el material está asignado!")
 
+# =========================
+# 8) Descargas técnicas (sidebar)
+# =========================
+with st.sidebar:
+    st.markdown("### 📥 Descargas técnicas")
+    try:
+        import inspect
+        current_script = inspect.getsourcefile(lambda: None) or __file__
+        if os.path.exists(current_script):
+            with open(current_script, "rb") as f:
+                st.download_button(
+                    "Descargar app.py",
+                    data=f.read(),
+                    file_name="app.py",
+                    mime="text/x-python",
+                    use_container_width=True
+                )
+    except Exception as e:
+        st.caption(f"No se pudo preparar la descarga del script: {e}")
+
+    if os.path.exists("requirements.txt"):
+        with open("requirements.txt", "rb") as f:
+            st.download_button(
+                "Descargar requirements.txt",
+                data=f.read(),
+                file_name="requirements.txt",
+                mime="text/plain",
+                use_container_width=True
+            )
+        
 # Pie
 st.divider()
 st.caption("⚠️ MVP demostrativo/educativo. No sustituye la formación en primeros auxilios ni la atención profesional.")
