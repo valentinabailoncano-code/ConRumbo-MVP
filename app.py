@@ -126,10 +126,10 @@ KITS = {
 }
 
 APA_TEXT = (
-    "APA – Asegurar la escena · Proteger a la víctima · Avisar al 112.\n"
-    "1) Asegura el entorno (peligros eléctricos, tráfico, fuego).\n"
-    "2) Protégete y protege a la víctima (guantes si es posible, posición segura).\n"
-    "3) Llama al 112 y describe clara y brevemente la situación.\n"
+    "APA – Asegurar la escena · Proteger a la víctima · Avisar al 112.\\n"
+    "1) Asegura el entorno (peligros eléctricos, tráfico, fuego).\\n"
+    "2) Protégete y protege a la víctima (guantes si es posible, posición segura).\\n"
+    "3) Llama al 112 y describe clara y brevemente la situación.\\n"
     "Añade respiración 4‑4‑4: inhala 4s, retén 4s, exhala 4s (3 ciclos)."
 )
 
