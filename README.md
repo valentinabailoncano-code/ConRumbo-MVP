@@ -161,39 +161,5 @@ SMTP_PASS=
 
 ---
 
-## 8. Despliegue (opciones)
-
-- **Streamlit Community Cloud**: conecta tu repo, define `main.py` como *entry point*.
-- **Railway/Render**: crea servicio Python con `streamlit run main.py`.
-- **Docker** (opcional): genera imagen con `EXPOSE 8501` y CMD de streamlit.
-
----
-
-## 9. Indicaciones de diseño / personalización
-
-- Muestra solo **tu nombre** (personaliza la pantalla “Sobre mí”).  
-- Usa el **logo de EVOLVE** en el *header* (`assets/logo_evolve.png`).  
-- Paleta calmada (azules/verde menta), tipografía legible, botones grandes.
-
----
-
-## 10. Roadmap después del MVP
-
-- Geolocalización y envío de ubicación en SMS/WhatsApp (si se configura Twilio).
-- Modo **offline** (caché de guías e imágenes).
-- Validación clínica del contenido por profesional sanitario.
-- Localización EN/FR/IT.
-
----
-
-## 11. FAQ
-
-**¿Puedo usarlo sin internet?** Sí para la interfaz y TTS local; los vídeos hospedados externos requieren conexión.  
-**¿La entrada por voz es obligatoria?** No, es opcional. El TTS (salida de voz) es parte del núcleo.  
-**¿Puedo añadir mis vídeos/fotos?** Sí, sustituye los placeholders en `assets/`.
-
----
-
-## 12. Licencia
 
 MIT (sugerida). Añade tu archivo `LICENSE` en la raíz del repo.
