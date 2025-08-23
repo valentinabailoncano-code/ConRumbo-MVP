@@ -4,3 +4,4 @@ av>=12.3.0
 aiortc>=1.9.0
 soundfile>=0.12.1
 vosk>=0.3.45
+streamlit>=1.35.0

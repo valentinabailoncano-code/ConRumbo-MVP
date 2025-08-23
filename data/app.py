@@ -30,6 +30,36 @@ def descarga_icono():
 
 descarga_icono()
 
+# ============ IDIOMA ============
+lang = st.sidebar.selectbox("🌐 Idioma / Language", ["Español", "English"])
+st.session_state["lang"] = "es" if lang == "Español" else "en"
+
+TEXTS = {
+    "es": {
+        "title": "🆘 ConRumbo – MVP de Primeros Auxilios",
+        "caption": "Asistente educativo con botón SOS, material multimedia y chat.",
+        "sos_button": "LLAMAR 112",
+        "emergency_caption": "En móvil pulsa el botón. En ordenador, marca manualmente: 112.",
+        "tech_downloads": "📥 Descargas técnicas",
+        "download_app": "Descargar app.py",
+        "download_req": "Descargar requirements.txt",
+        "footer": "⚠️ Demo educativa. No sustituye atención médica profesional.",
+    },
+    "en": {
+        "title": "🆘 ConRumbo – First Aid MVP",
+        "caption": "Educational assistant with SOS button, media materials and chat.",
+        "sos_button": "CALL 112",
+        "emergency_caption": "On mobile press the button. On desktop, dial manually: 112.",
+        "tech_downloads": "📥 Technical downloads",
+        "download_app": "Download app.py",
+        "download_req": "Download requirements.txt",
+        "footer": "⚠️ Educational demo. Not a substitute for professional medical attention.",
+    }
+}
+
+T = TEXTS[st.session_state["lang"]]
+
+
 # Estilo y botón SOS adaptado
 st.markdown("""
 <style>
@@ -90,20 +120,21 @@ st.markdown("""
 EMERGENCY_NUMBER = "112"
 
 # HTML del botón SOS embebido en todas las secciones
-sos_html = f"""
-<div class="sos-wrap">
-  <a class="sos-btn" href="tel:{EMERGENCY_NUMBER}">
-    <span class="sos-badge">SOS</span> LLAMAR {EMERGENCY_NUMBER}
+sos_html = f'''
+<div style="position:fixed;top:20px;right:20px;z-index:9999;">
+  <a href="tel:{EMERGENCY_NUMBER}" target="_self"
+     style="background:#D90429;color:#fff;font-weight:bold;font-size:18px;padding:16px 24px;
+            border-radius:12px;box-shadow:0 6px 0 #a1031e;text-decoration:none;display:inline-block;">
+    🚨 {T["sos_button"]}
   </a>
-  <div>
-    <div style="font-size:14px; color:#6b7280; margin-bottom:2px;">Botón de emergencia</div>
-    <div style="font-size:13px; color:#111827;">En móvil pulsa el botón. En ordenador marca manualmente: <strong>{EMERGENCY_NUMBER}</strong></div>
-  </div>
 </div>
-"""
-
+'''
 def mostrar_boton_sos():
     st.markdown(sos_html, unsafe_allow_html=True)
+
+# ============ ENCABEZADO ============
+st.title(T["title"])
+st.caption(T["caption"])
 
 # =========================
 # Estado de sesión
@@ -661,28 +692,24 @@ st.markdown("----")
 st.markdown('<a name="descargas-tecnicas"></a>', unsafe_allow_html=True)
 st.subheader("📥 Descargas técnicas")
 
+# ============ DESCARGAS TÉCNICAS ============
+st.markdown("### " + T["tech_downloads"])
 try:
     import inspect
     current_script = inspect.getsourcefile(lambda: None) or __file__
     if os.path.exists(current_script):
         with open(current_script, "rb") as f:
-            st.download_button(
-                "Descargar app.py",
-                data=f.read(),
-                file_name="app.py",
-                mime="text/x-python"
-            )
-except Exception as e:
-    st.caption(f"No se pudo preparar la descarga del script: {e}")
+            st.download_button(T["download_app"], f.read(), file_name="app.py", mime="text/x-python")
+except Exception:
+    pass
 
 if os.path.exists("requirements.txt"):
     with open("requirements.txt", "rb") as f:
-        st.download_button(
-            "Descargar requirements.txt",
-            data=f.read(),
-            file_name="requirements.txt",
-            mime="text/plain"
-        )
+        st.download_button(T["download_req"], f.read(), file_name="requirements.txt", mime="text/plain")
+
+# ============ PIE DE PÁGINA ============
+st.markdown("---")
+st.caption(T["footer"])
 
 # Pie
 st.divider()
