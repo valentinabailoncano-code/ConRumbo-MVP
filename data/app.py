@@ -431,18 +431,8 @@ tabs = st.tabs([
     "🗂️ Centro de medios"
 ])
 
-with st.sidebar:
-    st.markdown("### 📥 Descargas técnicas")
-    try:
-        import inspect
-        current_script = inspect.getsourcefile(lambda: None) or __file__
-        if os.path.exists(current_script):
-            with open(current_script, "rb") as f:
-                st.download_button("Descargar app.py", f.read(), file_name="app.py", mime="text/x-python", use_container_width=True)
-    except Exception as e:
-        st.caption(f"No se pudo preparar la descarga del script: {e}")
 
-    if os.path.exists("requirements.txt"):
+if os.path.exists("requirements.txt"):
         with open("requirements.txt", "rb") as f:
             st.download_button("Descargar requirements.txt", f.read(), file_name="requirements.txt", mime="text/plain", use_container_width=True)
 
@@ -492,17 +482,18 @@ with tabs[0]:
             st.info("Pulsa **ACTIVAR** y elige un escenario para iniciar la guía.")
 
     with right:
-        st.markdown("#### ⬇️ Descargas del escenario")
+        st.markdown("##### 📥 Descargas del escenario")
+with st.expander("Descargar guía del escenario", expanded=False):
         if st.session_state.scenario in SCENARIOS:
             txt = f"# {st.session_state.scenario}\n\n" + "\n".join([f"- {s}" for s in SCENARIOS[st.session_state.scenario]])
-            download_button("Descargar guía (.md)", txt, f"ConRumbo_{st.session_state.scenario.replace(' ','_')}.md")
+            download_button("📄 Descargar guía (.md)", txt, f"ConRumbo_{st.session_state.scenario.replace(' ','_')}.md")
 
             # ZIP de material (si hay ficheros locales disponibles)
             if st.button("📦 Preparar material (ZIP)"):
                 data = zip_scenario_assets(st.session_state.scenario)
                 if data:
-                    st.download_button(
-                        "Descargar ZIP",
+                            st.download_button(
+            "📦 Descargar ZIP",
                         data=data,
                         file_name=f"ConRumbo_{st.session_state.scenario.replace(' ','_')}_media.zip",
                         mime="application/zip",
@@ -510,7 +501,7 @@ with tabs[0]:
                 else:
                     st.warning("No hay archivos locales en assets/ para este escenario todavía.")
 
-    st.session_state.progress["Emergencias"] = True
+st.session_state.progress["Emergencias"] = True
 
 # =========================
 # 2) PRIMEROS AUXILIOS
