@@ -10,62 +10,78 @@ import platform
 st.set_page_config(page_title="ConRumbo – Primeros Auxilios (MVP)", page_icon="🆘", layout="wide")
 
 
-# ======== Estilo formal + botón SOS grande ========
+# Estilo y botón SOS adaptado
 st.markdown("""
 <style>
-/* limpieza y tipografía */
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
-:root { --brand:#D90429; --brand-dark:#a1031e; --ok:#16a34a; }
-html, body, [class*="css"] { font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji"; }
-
-/* contenedor del botón */
-.sos-wrap { 
-  display:flex; align-items:center; gap:14px; 
-  padding:14px 0 6px 0; 
-  border-bottom:1px solid #e9e9ee; margin-bottom:14px;
+:root {
+  --brand:#D90429; --brand-dark:#a1031e;
 }
-
-/* botón rojo gigante */
+.sos-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #e9e9ee;
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+}
 .sos-btn {
-  appearance:none; border:0; 
-  background:var(--brand);
-  color:#fff; font-weight:800; letter-spacing:0.5px;
-  font-size:28px; line-height:1;
-  padding:22px 34px; border-radius:16px;
-  box-shadow: 0 6px 0 var(--brand-dark), 0 10px 24px rgba(217,4,41,.25);
-  cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:12px;
-  transition: transform .04s ease-in-out, box-shadow .2s ease;
+  appearance: none;
+  border: 0;
+  background: var(--brand);
+  color: #fff;
+  font-weight: bold;
+  font-size: 22px;
+  padding: 18px 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 0 var(--brand-dark), 0 10px 24px rgba(217, 4, 41, .25);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
-.sos-btn:active { transform: translateY(2px); box-shadow: 0 4px 0 var(--brand-dark), 0 8px 18px rgba(217,4,41,.25); }
+.sos-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 4px 0 var(--brand-dark), 0 8px 18px rgba(217, 4, 41, .25);
+}
 .sos-badge {
-  background:#fff; color:var(--brand); font-weight:900; 
-  border-radius:999px; padding:6px 10px; font-size:14px;
+  background: #fff;
+  color: var(--brand);
+  font-weight: bold;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 14px;
   box-shadow: inset 0 0 0 2px var(--brand);
+}
+@media (max-width: 600px) {
+  .sos-btn {
+    font-size: 18px;
+    padding: 14px 20px;
+  }
+  .sos-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 </style>
 """, unsafe_allow_html=True)
 
 EMERGENCY_NUMBER = "112"
 
-# En móvil/navegador compatible abrirá el marcador. En desktop mostrará el número.
-sos_html = f'''
+# HTML del botón
+sos_html = f"""
 <div class="sos-wrap">
-  <a class="sos-btn" href="tel:{EMERGENCY_NUMBER}" target="_self">
+  <a class="sos-btn" href="tel:{EMERGENCY_NUMBER}">
     <span class="sos-badge">SOS</span> LLAMAR {EMERGENCY_NUMBER}
   </a>
   <div>
     <div style="font-size:14px; color:#6b7280; margin-bottom:2px;">Botón de emergencia</div>
-    <div style="font-size:13px; color:#111827;">En caso grave, pulsa el botón (móvil) o marca {EMERGENCY_NUMBER}.</div>
+    <div style="font-size:13px; color:#111827;">En móvil pulsa el botón. En ordenador marca manualmente: <strong>{EMERGENCY_NUMBER}</strong></div>
   </div>
 </div>
-'''
+"""
 st.markdown(sos_html, unsafe_allow_html=True)
-
-# Aviso para ordenadores (por si el enlace tel: no funciona)
-if platform.system() in {"Windows","Darwin","Linux"}:
-    st.info(f"Si estás en ordenador, abre tu teléfono y marca **{EMERGENCY_NUMBER}** manualmente.")
 
 # =========================
 # Estado de sesión
