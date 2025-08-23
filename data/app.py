@@ -10,62 +10,90 @@ import platform
 st.set_page_config(page_title="ConRumbo – Primeros Auxilios (MVP)", page_icon="🆘", layout="wide")
 
 
-# ======== Estilo formal + botón SOS grande ========
+# ======== Estilo formal + SOS multiplataforma ========
+import platform
+from streamlit.components.v1 import html
+
+# CSS general (tipografía y estilos)
 st.markdown("""
 <style>
-/* limpieza y tipografía */
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
-:root { --brand:#D90429; --brand-dark:#a1031e; --ok:#16a34a; }
-html, body, [class*="css"] { font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji"; }
-
-/* contenedor del botón */
-.sos-wrap { 
-  display:flex; align-items:center; gap:14px; 
-  padding:14px 0 6px 0; 
-  border-bottom:1px solid #e9e9ee; margin-bottom:14px;
+#MainMenu, footer, header {visibility: hidden;}
+:root { --brand:#D90429; --brand-dark:#a1031e; }
+html, body, [class*="css"] {
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial;
 }
-
-/* botón rojo gigante */
+.sos-wrap {display:flex; align-items:center; gap:16px; padding:14px 0 10px; border-bottom:1px solid #e9e9ee; margin-bottom:14px;}
 .sos-btn {
-  appearance:none; border:0; 
-  background:var(--brand);
-  color:#fff; font-weight:800; letter-spacing:0.5px;
-  font-size:28px; line-height:1;
-  padding:22px 34px; border-radius:16px;
+  appearance:none; border:0; background:var(--brand); color:#fff; font-weight:800; letter-spacing:.5px;
+  font-size:28px; line-height:1; padding:22px 34px; border-radius:16px;
   box-shadow: 0 6px 0 var(--brand-dark), 0 10px 24px rgba(217,4,41,.25);
-  cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:12px;
+  cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:12px; white-space:nowrap;
   transition: transform .04s ease-in-out, box-shadow .2s ease;
 }
 .sos-btn:active { transform: translateY(2px); box-shadow: 0 4px 0 var(--brand-dark), 0 8px 18px rgba(217,4,41,.25); }
-.sos-badge {
-  background:#fff; color:var(--brand); font-weight:900; 
-  border-radius:999px; padding:6px 10px; font-size:14px;
-  box-shadow: inset 0 0 0 2px var(--brand);
-}
+.sos-badge { background:#fff; color:var(--brand); font-weight:900; border-radius:999px; padding:6px 10px; font-size:14px; box-shadow: inset 0 0 0 2px var(--brand);}
+.sos-sub {font-size:13px; color:#111827}
+.sos-note {font-size:13px; color:#6b7280; margin-top:2px}
+.sos-alt-btn {display:inline-block; padding:10px 14px; border:1px solid #e5e7eb; border-radius:10px; margin-right:8px; text-decoration:none;}
+.copy-btn {padding:8px 12px; border:1px solid #d1d5db; border-radius:8px; background:#fff; cursor:pointer;}
 </style>
 """, unsafe_allow_html=True)
 
 EMERGENCY_NUMBER = "112"
 
-# En móvil/navegador compatible abrirá el marcador. En desktop mostrará el número.
-sos_html = f'''
-<div class="sos-wrap">
-  <a class="sos-btn" href="tel:{EMERGENCY_NUMBER}" target="_self">
-    <span class="sos-badge">SOS</span> LLAMAR {EMERGENCY_NUMBER}
-  </a>
-  <div>
-    <div style="font-size:14px; color:#6b7280; margin-bottom:2px;">Botón de emergencia</div>
-    <div style="font-size:13px; color:#111827;">En caso grave, pulsa el botón (móvil) o marca {EMERGENCY_NUMBER}.</div>
-  </div>
-</div>
-'''
-st.markdown(sos_html, unsafe_allow_html=True)
+# QR opcional (no rompas si no está la lib)
+def render_qr_tel(number: str):
+    try:
+        import qrcode
+        from PIL import Image
+        import io
+        qr = qrcode.QRCode(box_size=8, border=2)
+        qr.add_data(f"tel:{number}")
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        buf.seek(0)
+        st.image(buf, caption="Escanea para llamar desde tu móvil", width=180)
+    except Exception:
+        st.caption("QR no disponible (falta librería).")
 
-# Aviso para ordenadores (por si el enlace tel: no funciona)
-if platform.system() in {"Windows","Darwin","Linux"}:
-    st.info(f"Si estás en ordenador, abre tu teléfono y marca **{EMERGENCY_NUMBER}** manualmente.")
+def render_sos_panel():
+    st.markdown(f"""
+    <div class="sos-wrap">
+      <a class="sos-btn" href="tel:{EMERGENCY_NUMBER}" target="_self">
+        <span class="sos-badge">SOS</span> LLAMAR {EMERGENCY_NUMBER}
+      </a>
+      <div>
+        <div class="sos-sub"><strong>Botón de emergencia</strong></div>
+        <div class="sos-note">En móvil abrirá el marcador automáticamente. En ordenador tienes opciones abajo.</div>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns([0.6, 0.4])
+    with col1:
+        os_name = platform.system()
+        st.markdown("**Alternativas en ordenador:**")
+        if os_name == "Darwin":  # macOS
+            st.markdown(f'[☏ Llamar con FaceTime](facetime-audio://{EMERGENCY_NUMBER}){{: .sos-alt-btn}}', unsafe_allow_html=True)
+        # Skype / callto disponibles si el usuario los tiene instalados
+        st.markdown(f'[📞 Llamar con Skype](skype:{EMERGENCY_NUMBER}?call){{: .sos-alt-btn}}', unsafe_allow_html=True)
+        st.markdown(f'[📟 callto://](callto://{EMERGENCY_NUMBER}){{: .sos-alt-btn}}', unsafe_allow_html=True)
+
+        # Copiar número
+        html(f'''
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('{EMERGENCY_NUMBER}'); this.innerText='¡Copiado!'; setTimeout(()=>this.innerText='Copiar {EMERGENCY_NUMBER}',1200);">
+          Copiar {EMERGENCY_NUMBER}
+        </button>
+        ''', height=40)
+
+        st.info(f"Si ninguna opción se abre, marca **{EMERGENCY_NUMBER}** manualmente en tu teléfono o usa el QR.")
+    with col2:
+        render_qr_tel(EMERGENCY_NUMBER)
+
+# Renderizar el panel
+render_sos_panel()
 
 # =========================
 # Estado de sesión
