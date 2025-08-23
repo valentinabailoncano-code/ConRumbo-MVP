@@ -1,6 +1,6 @@
 # ConRumbo — MVP de primeros auxilios guiados
 
-**Autor:** *Valentina Bailon* · **Máster:** *EVOLVE MÁSTER* · **Logo:** *(coloca `assets/logo_evolve.png`)*
+**Autor:** *Valentina Bailon* · **Máster:** *EVOLVE MÁSTER* · 
 
 ConRumbo es una aplicación en **Streamlit** que ayuda a actuar con rapidez y calma ante una emergencia.
 Incluye guías de **emergencias inmediatas**, **primeros auxilios** paso a paso con **fotos y vídeos** (placeholders),
