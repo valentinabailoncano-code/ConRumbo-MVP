@@ -666,7 +666,7 @@ with tabs[6]:
 # =========================
 # 8) 🔽 Descargas técnicas (ancla flotante)
 # =========================
-st.markdown("----")
+"""st.markdown("----")
 st.markdown('<a name="descargas-tecnicas"></a>', unsafe_allow_html=True)
 st.subheader("📥 Descargas técnicas")
 
@@ -691,7 +691,7 @@ if os.path.exists("requirements.txt"):
             data=f.read(),
             file_name="requirements.txt",
             mime="text/plain"
-        )
+        )"""
 
 # Pie
 st.divider()
