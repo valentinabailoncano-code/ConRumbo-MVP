@@ -96,7 +96,7 @@ def to_bytes(content: str) -> bytes:
     bio.seek(0)
     return bio.read()
 
-def download_md_button(label: str, content: str, filename: str):
+def download_button(label: str, content: str, filename: str):
     st.download_button(label, data=content.encode("utf-8"), file_name=filename, mime="text/markdown")
 
 # =========================
