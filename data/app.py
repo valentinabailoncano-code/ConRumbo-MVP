@@ -9,6 +9,26 @@ import zipfile, os, re
 import platform
 st.set_page_config(page_title="ConRumbo – Primeros Auxilios (MVP)", page_icon="🆘", layout="wide")
 
+# Icono de descargas técnicas flotante
+import base64
+
+def descarga_icono():
+    icon_path = "assets/icono_descarga.png"  # Usa el PNG que tú quieras
+    if os.path.exists(icon_path):
+        with open(icon_path, "rb") as img:
+            b64_img = base64.b64encode(img.read()).decode("utf-8")
+            img_tag = f'<img src="data:image/png;base64,{b64_img}" width="32" title="Descargar app.py y requirements.txt" style="cursor:pointer;">'
+    else:
+        img_tag = '<span style="font-size:22px;" title="Descargar app.py y requirements.txt">⬇️</span>'
+
+    html_code = f"""
+    <div style='position:fixed;top:22px;right:22px;z-index:9999;'>
+        <a href="#descargas-tecnicas" title="Descargar código">{img_tag}</a>
+    </div>
+    """
+    st.markdown(html_code, unsafe_allow_html=True)
+
+descarga_icono()
 
 # Estilo y botón SOS adaptado
 st.markdown("""
@@ -69,7 +89,7 @@ st.markdown("""
 
 EMERGENCY_NUMBER = "112"
 
-# HTML del botón
+# HTML del botón SOS embebido en todas las secciones
 sos_html = f"""
 <div class="sos-wrap">
   <a class="sos-btn" href="tel:{EMERGENCY_NUMBER}">
@@ -81,7 +101,9 @@ sos_html = f"""
   </div>
 </div>
 """
-st.markdown(sos_html, unsafe_allow_html=True)
+
+def mostrar_boton_sos():
+    st.markdown(sos_html, unsafe_allow_html=True)
 
 # =========================
 # Estado de sesión
@@ -370,19 +392,7 @@ def media_block(title_key: str):
             for f in up_vids:
                 st.video(f)
 
-    # Subida rápida para demo (no persiste)
-    with st.expander("➕ Añadir material rápido para la demo (no persistente)"):
-        up_imgs = st.file_uploader("Sube imágenes", type=["png","jpg","jpeg"], accept_multiple_files=True, key=f"upimg_{title_key}")
-        up_vids = st.file_uploader("Sube vídeos", type=["mp4","mov","webm"], accept_multiple_files=True, key=f"upvid_{title_key}")
-        if up_imgs:
-            st.success(f"Imágenes cargadas: {len(up_imgs)}")
-            for f in up_imgs:
-                st.image(f, caption=f.name, use_container_width=True)
-        if up_vids:
-            st.success(f"Vídeos cargados: {len(up_vids)}")
-            for f in up_vids:
-                st.video(f)
-
+# =========================
 def zip_scenario_assets(scenario: str) -> bytes:
     """Crea un ZIP en memoria con los ficheros locales del escenario."""
     buf = BytesIO()
@@ -440,6 +450,7 @@ with st.sidebar:
 # 1) EMERGENCIAS INMEDIATAS
 # =========================
 with tabs[0]:
+    mostrar_boton_sos()
     st.subheader("🚨 Botón de emergencia")
     left, right = st.columns([0.58, 0.42])
     with left:
@@ -505,6 +516,7 @@ with tabs[0]:
 # 2) PRIMEROS AUXILIOS
 # =========================
 with tabs[1]:
+    mostrar_boton_sos()
     st.subheader("💉 Guías esenciales")
     for titulo, pasos in PRIMEROS_AUX.items():
         with st.expander(f"📄 {titulo}", expanded=False):
@@ -519,6 +531,7 @@ with tabs[1]:
 # 3) KITS DE SUPERVIVENCIA
 # =========================
 with tabs[2]:
+    mostrar_boton_sos()
     st.subheader("🎒 Listas recomendadas")
     cols = st.columns(3)
     for i, (kit, items) in enumerate(KITS.items()):
@@ -533,6 +546,7 @@ with tabs[2]:
 # 4) PROGRESO
 # =========================
 with tabs[3]:
+    mostrar_boton_sos()
     st.subheader("📊 Tu progreso")
     done_count = 0
     total = len(st.session_state.progress)
@@ -554,6 +568,7 @@ with tabs[3]:
 # 5) MANTÉN LA CALMA (APA)
 # =========================
 with tabs[4]:
+    mostrar_boton_sos()
     st.subheader("😌 Mantén la calma (APA)")
     st.markdown(
         "**APA** = **Asegurar** la escena · **Proteger** a la víctima · **Avisar** al 112.\n\n" +
@@ -571,6 +586,7 @@ with tabs[4]:
 # 6) CHAT (voz y texto)
 # =========================
 with tabs[5]:
+    mostrar_boton_sos()
     st.subheader("🤖 Chat de preguntas (voz y texto)")
     st.caption("Describe la situación: *“se está atragantando y no respira”*, *“hay una quemadura con aceite”*, etc.")
 
@@ -628,6 +644,7 @@ with tabs[5]:
 # 7) CENTRO DE MEDIOS
 # =========================
 with tabs[6]:
+    mostrar_boton_sos()
     st.subheader("🗂️ Centro de medios (resumen)")
     faltantes = []
     for k, v in MEDIA.items():
@@ -647,35 +664,35 @@ with tabs[6]:
         st.success("¡Todo el material está asignado!")
 
 # =========================
-# 8) Descargas técnicas (sidebar)
+# 8) 🔽 Descargas técnicas (ancla flotante)
 # =========================
-with st.sidebar:
-    st.markdown("### 📥 Descargas técnicas")
-    try:
-        import inspect
-        current_script = inspect.getsourcefile(lambda: None) or __file__
-        if os.path.exists(current_script):
-            with open(current_script, "rb") as f:
-                st.download_button(
-                    "Descargar app.py",
-                    data=f.read(),
-                    file_name="app.py",
-                    mime="text/x-python",
-                    use_container_width=True
-                )
-    except Exception as e:
-        st.caption(f"No se pudo preparar la descarga del script: {e}")
+st.markdown("----")
+st.markdown('<a name="descargas-tecnicas"></a>', unsafe_allow_html=True)
+st.subheader("📥 Descargas técnicas")
 
-    if os.path.exists("requirements.txt"):
-        with open("requirements.txt", "rb") as f:
+try:
+    import inspect
+    current_script = inspect.getsourcefile(lambda: None) or __file__
+    if os.path.exists(current_script):
+        with open(current_script, "rb") as f:
             st.download_button(
-                "Descargar requirements.txt",
+                "Descargar app.py",
                 data=f.read(),
-                file_name="requirements.txt",
-                mime="text/plain",
-                use_container_width=True
+                file_name="app.py",
+                mime="text/x-python"
             )
-        
+except Exception as e:
+    st.caption(f"No se pudo preparar la descarga del script: {e}")
+
+if os.path.exists("requirements.txt"):
+    with open("requirements.txt", "rb") as f:
+        st.download_button(
+            "Descargar requirements.txt",
+            data=f.read(),
+            file_name="requirements.txt",
+            mime="text/plain"
+        )
+
 # Pie
 st.divider()
 st.caption("⚠️ MVP demostrativo/educativo. No sustituye la formación en primeros auxilios ni la atención profesional.")
