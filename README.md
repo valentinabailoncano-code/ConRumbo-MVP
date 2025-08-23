@@ -31,7 +31,6 @@ conrumbo/
 │  ├─ progress.py
 │  └─ calm_apa.py
 ├─ assets/
-│  ├─ logo_evolve.png
 │  ├─ emergencies/
 │  │  ├─ atragantamiento/
 │  │  │  ├─ fotos/       # .jpg/.png
